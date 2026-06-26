@@ -1,3 +1,9 @@
+// ── Floating header on scroll ───────────────────────
+const topbar = document.querySelector('.topbar');
+window.addEventListener('scroll', () => {
+  topbar.classList.toggle('scrolled', window.scrollY > 40);
+}, { passive: true });
+
 // ── Floating hero photos ────────────────────────────
 async function loadHeroPhotos() {
   const container = document.getElementById('heroPhotos');

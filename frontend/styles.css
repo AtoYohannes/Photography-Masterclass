@@ -50,17 +50,28 @@ img { display: block; max-width: 100%; }
 
 /* ── TOPBAR ─────────────────────────────────────── */
 .topbar {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 100;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.9rem 2rem;
+  padding: 1.4rem 12rem;
+  background: transparent;
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
+  border-bottom: 1px solid transparent;
+  transition: background 0.3s ease, backdrop-filter 0.3s ease, -webkit-backdrop-filter 0.3s ease, border-color 0.3s ease, padding 0.3s ease;
+}
+
+.topbar.scrolled {
   background: rgba(255, 253, 246, 0.97);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border-bottom: 1px solid rgba(11, 33, 34, 0.1);
+  padding: 1rem 12rem;
 }
 
 .brand {
@@ -70,7 +81,7 @@ img { display: block; max-width: 100%; }
 }
 
 .brand img {
-  height: 38px;
+  height: 52px;
   width: auto;
 }
 
@@ -98,8 +109,8 @@ img { display: block; max-width: 100%; }
 }
 
 .pill {
-  padding: 0.65rem 1.15rem;
-  font-size: 0.82rem;
+  padding: 1rem 3.2rem;
+  font-size: 0.95rem;
   background: var(--fire);
   color: #fff;
   letter-spacing: 0.03em;
@@ -859,7 +870,8 @@ input[aria-invalid="true"] {
 }
 
 @media (max-width: 640px) {
-  .topbar { padding: 0.8rem 1.2rem; }
+  .topbar { padding: 1rem 1.2rem; }
+  .topbar.scrolled { padding: 0.7rem 1.2rem; }
 
   .hero-content {
     padding: 2rem 1.3rem 3rem;
