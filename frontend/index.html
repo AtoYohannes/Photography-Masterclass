@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Photography Master Class | Visit Addis Ababa</title>
+    <meta name="description" content="Pre-register for the Photography Master Class hosted by Visit Addis Ababa." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <img src="https://visitaddisababa.et/assets/logo-CiFNnHkJ.svg" alt="Visit Addis Ababa logo" />
+        <div>
+          <p class="eyebrow">Presented by</p>
+          <h1>Visit Addis Ababa</h1>
+        </div>
+      </div>
+      <a class="pill" href="#register">Pre-register now</a>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Free photography master class</p>
+          <h2>Capture the soul of Addis Ababa with expert guidance.</h2>
+          <p class="lead">
+            Join a vibrant learning experience led by Amanuel Sileshi and Adane Firdie. This free event is designed for curious photographers and storytelling enthusiasts.
+          </p>
+          <div class="hero-actions">
+            <a class="button primary" href="#register">Reserve your place</a>
+            <div class="stat-card">
+              <strong id="registrationsCount">0</strong>
+              <span>registered so far</span>
+            </div>
+          </div>
+        </div>
+        <div class="hero-panel">
+          <div class="panel-card">
+            <h3>Event details</h3>
+            <ul>
+              <li>Free admission</li>
+              <li>Simple pre-registration</li>
+              <li>Limited seats for the master class</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="teachers-section">
+        <div class="section-heading">
+          <p class="eyebrow">Meet your mentors</p>
+          <h3>Learn from experienced visual storytellers.</h3>
+        </div>
+        <div class="teachers-grid">
+          <article class="teacher-card">
+            <div class="teacher-photo placeholder">Upload image</div>
+            <h4>Amanuel Sileshi</h4>
+            <p>Photography educator and visual storyteller with a deep eye for urban narrative.</p>
+          </article>
+          <article class="teacher-card">
+            <div class="teacher-photo placeholder">Upload image</div>
+            <h4>Adane Firdie</h4>
+            <p>Creative photographer focused on culture, movement, and capturing authentic scenes.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="register-section" id="register">
+        <div class="register-card">
+          <div class="register-copy">
+            <p class="eyebrow">Pre-register</p>
+            <h3>Secure your complimentary spot.</h3>
+            <p>
+              Share your details below and we’ll keep your registration on record. If you sign up again, we’ll let you know that you have already registered.
+            </p>
+          </div>
+          <form id="registrationForm" class="register-form">
+            <label>
+              Full name
+              <input type="text" name="fullName" placeholder="Your full name" required />
+            </label>
+            <label>
+              Email address
+              <input type="email" name="email" placeholder="you@example.com" required />
+            </label>
+            <label>
+              Phone number
+              <input type="tel" name="phone" placeholder="+251 9XX XXX XXX" required />
+            </label>
+            <button class="button primary" type="submit">Pre-register</button>
+            <p id="formMessage" class="form-message" role="status" aria-live="polite"></p>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Photography Master Class • Visit Addis Ababa • Free entry</p>
+    </footer>
+
+    <script src="/app.js"></script>
+  </body>
+</html>
