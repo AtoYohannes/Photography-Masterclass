@@ -74,6 +74,12 @@ img { display: block; max-width: 100%; }
   padding: 1rem 12rem;
 }
 
+.topbar:not(.scrolled) .brand h1,
+.topbar:not(.scrolled) .brand .eyebrow {
+  color: #fff;
+  transition: color 0.3s ease;
+}
+
 .brand {
   display: flex;
   align-items: center;
@@ -81,7 +87,7 @@ img { display: block; max-width: 100%; }
 }
 
 .brand img {
-  height: 52px;
+  height: 70px;
   width: auto;
 }
 
@@ -91,6 +97,7 @@ img { display: block; max-width: 100%; }
   font-weight: 600;
   color: var(--ink);
   letter-spacing: 0.01em;
+  transition: color 0.3s ease;
 }
 
 /* ── BUTTONS ────────────────────────────────────── */
