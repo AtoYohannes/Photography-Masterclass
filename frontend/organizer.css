@@ -202,6 +202,26 @@
   width: 2rem;
 }
 
+.delete-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: #c0392b;
+  font-size: 0.8rem;
+  cursor: pointer;
+  opacity: 0.4;
+  transition: opacity 0.15s ease, background 0.15s ease;
+}
+
+tr:hover .delete-btn { opacity: 1; }
+.delete-btn:hover { background: rgba(192, 57, 43, 0.1); }
+.delete-btn:disabled { opacity: 0.2; cursor: not-allowed; }
+
 @media (max-width: 600px) {
   .org-login-card {
     padding: 2rem 1.5rem;

@@ -58,21 +58,52 @@ async function loadRegistrations() {
             <th>Email</th>
             <th>Phone</th>
             <th>Registered at</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
           ${rows.map((r, i) => `
-            <tr>
+            <tr data-id="${escHtml(r.id)}">
               <td class="row-num">${i + 1}</td>
               <td>${escHtml(r.fullName)}</td>
               <td>${escHtml(r.email)}</td>
               <td>${escHtml(r.phone)}</td>
               <td>${new Date(r.registeredAt).toLocaleString()}</td>
+              <td><button class="delete-btn" data-id="${escHtml(r.id)}" title="Delete">✕</button></td>
             </tr>
           `).join('')}
         </tbody>
       </table>
     `;
+
+    orgTable.querySelectorAll('.delete-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const id = btn.dataset.id;
+        const row = btn.closest('tr');
+        const name = row.cells[1].textContent;
+        if (!confirm(`Remove ${name} from the list?`)) return;
+        btn.disabled = true;
+        try {
+          const res = await fetch(`/api/registrations/${encodeURIComponent(id)}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${getToken()}` }
+          });
+          const data = await res.json();
+          if (data.success) {
+            row.remove();
+            const remaining = orgTable.querySelectorAll('tbody tr').length;
+            if (orgCount) orgCount.textContent = remaining;
+            if (remaining === 0) orgTable.innerHTML = '<p class="empty-state">No registrations yet.</p>';
+          } else {
+            alert(data.message || 'Could not delete registration.');
+            btn.disabled = false;
+          }
+        } catch (_) {
+          alert('Unable to connect. Try again.');
+          btn.disabled = false;
+        }
+      });
+    });
   } catch (_) {
     orgTable.innerHTML = '<p class="empty-state">Unable to load registrations right now.</p>';
   }

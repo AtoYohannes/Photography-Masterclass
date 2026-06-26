@@ -266,6 +266,35 @@ function createServer() {
           return;
         }
 
+        const deleteMatch = pathname.match(/^\/api\/registrations\/([^/]+)$/);
+        if (deleteMatch) {
+          if (req.method !== 'DELETE') {
+            sendJson(res, 405, { success: false, message: 'Method not allowed.' });
+            return;
+          }
+          if (!checkAdminAuth(req)) {
+            sendJson(res, 401, { success: false, message: 'Unauthorized.' });
+            return;
+          }
+          const id = deleteMatch[1];
+          if (db.prepare) {
+            const result = db.prepare('DELETE FROM registrations WHERE id = ?').run(id);
+            if (result.changes === 0) {
+              sendJson(res, 404, { success: false, message: 'Registration not found.' });
+            } else {
+              sendJson(res, 200, { success: true });
+            }
+          } else {
+            const result = await db.query('DELETE FROM registrations WHERE id = $1', [id]);
+            if (result.rowCount === 0) {
+              sendJson(res, 404, { success: false, message: 'Registration not found.' });
+            } else {
+              sendJson(res, 200, { success: true });
+            }
+          }
+          return;
+        }
+
         if (pathname === '/api/register') {
           if (req.method !== 'POST') {
             sendJson(res, 405, { success: false, message: 'Method not allowed.' });
