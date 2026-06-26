@@ -35,6 +35,7 @@
           </p>
           <div class="hero-actions">
             <a class="button primary" href="#register">Reserve your place</a>
+            <a class="button secondary" href="#entriesSection">See registered people</a>
             <div class="stat-card">
               <strong id="registrationsCount">0</strong>
               <span>registered so far</span>
@@ -97,6 +98,22 @@
             <button class="button primary" type="submit">Pre-register</button>
             <p id="formMessage" class="form-message" role="status" aria-live="polite"></p>
           </form>
+        </div>
+      </section>
+
+      <section class="entries-section" id="entriesSection" aria-labelledby="entriesTitle">
+        <div class="section-heading">
+          <p class="eyebrow">Organizer view</p>
+          <h3 id="entriesTitle">Registered attendees</h3>
+        </div>
+        <div class="entries-card">
+          <div class="entries-toolbar">
+            <p>Live list of everyone who pre-registered.</p>
+            <button class="button secondary" id="refreshEntries" type="button">Refresh</button>
+          </div>
+          <div id="entriesTable" class="entries-table">
+            <p class="empty-state">Loading registrations…</p>
+          </div>
         </div>
       </section>
     </main>

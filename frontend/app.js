@@ -1,6 +1,8 @@
 const form = document.getElementById('registrationForm');
 const messageBox = document.getElementById('formMessage');
 const countBox = document.getElementById('registrationsCount');
+const entriesTable = document.getElementById('entriesTable');
+const refreshEntriesButton = document.getElementById('refreshEntries');
 
 async function updateCount() {
   try {
@@ -13,6 +15,54 @@ async function updateCount() {
     console.error(error);
   }
 }
+
+async function loadEntries() {
+  try {
+    const response = await fetch('/api/registrations');
+    const data = await response.json();
+
+    if (!data.success) {
+      entriesTable.innerHTML = '<p class="empty-state">Unable to load registrations right now.</p>';
+      return;
+    }
+
+    if (!data.registrations || data.registrations.length === 0) {
+      entriesTable.innerHTML = '<p class="empty-state">No registrations yet.</p>';
+      return;
+    }
+
+    const rows = data.registrations
+      .map((entry) => `
+        <tr>
+          <td>${entry.fullName}</td>
+          <td>${entry.email}</td>
+          <td>${entry.phone}</td>
+          <td>${new Date(entry.registeredAt).toLocaleString()}</td>
+        </tr>
+      `)
+      .join('');
+
+    entriesTable.innerHTML = `
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Registered at</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+    `;
+  } catch (error) {
+    entriesTable.innerHTML = '<p class="empty-state">Unable to load registrations right now.</p>';
+  }
+}
+
+refreshEntriesButton.addEventListener('click', () => {
+  loadEntries();
+});
 
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
@@ -39,6 +89,7 @@ form.addEventListener('submit', async (event) => {
       messageBox.className = 'form-message success';
       form.reset();
       await updateCount();
+      await loadEntries();
     } else {
       messageBox.textContent = data.message || 'Registration failed.';
       messageBox.className = 'form-message error';
@@ -50,3 +101,4 @@ form.addEventListener('submit', async (event) => {
 });
 
 updateCount();
+loadEntries();
