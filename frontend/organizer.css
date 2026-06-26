@@ -9,8 +9,14 @@
 
 .org-screen {
   flex: 1;
-  display: flex;
   flex-direction: column;
+}
+
+/* .org-screen { display: flex } would override [hidden]'s display:none
+   because a class selector (0-1-0) beats the UA [hidden] rule (0-0-1).
+   This rule restores correct behaviour. */
+.org-screen:not([hidden]) {
+  display: flex;
 }
 
 /* ── LOGIN ───────────────────────────────────────── */
