@@ -61,9 +61,64 @@ async function updateCount() {
   } catch (_) {}
 }
 
+// ── Validation helpers ──────────────────────────────
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.trim());
+}
+
+// Accepts +251, 251, or 0 prefix followed by 9 or 7 and 8 more digits
+function isValidEthiopianPhone(phone) {
+  const cleaned = phone.replace(/[\s\-().]/g, '');
+  return /^(?:\+251|251|0)[79]\d{8}$/.test(cleaned);
+}
+
+function setFieldError(input, msg) {
+  let hint = input.parentElement.querySelector('.field-error');
+  if (!hint) {
+    hint = document.createElement('p');
+    hint.className = 'field-error';
+    input.after(hint);
+  }
+  hint.textContent = msg;
+  input.setAttribute('aria-invalid', 'true');
+}
+
+function clearFieldError(input) {
+  input.parentElement.querySelector('.field-error')?.remove();
+  input.removeAttribute('aria-invalid');
+}
+
 // ── Registration form ───────────────────────────────
 const form       = document.getElementById('registrationForm');
 const messageBox = document.getElementById('formMessage');
+
+// Live phone validation feedback
+const phoneInput = document.getElementById('f-phone');
+phoneInput?.addEventListener('blur', () => {
+  const val = phoneInput.value.trim();
+  if (val && !isValidEthiopianPhone(val)) {
+    setFieldError(phoneInput, 'Enter an Ethiopian number: +251912345678 or 0912345678');
+  } else {
+    clearFieldError(phoneInput);
+  }
+});
+phoneInput?.addEventListener('input', () => {
+  if (phoneInput.getAttribute('aria-invalid')) clearFieldError(phoneInput);
+});
+
+// Live email validation feedback
+const emailInput = document.getElementById('f-email');
+emailInput?.addEventListener('blur', () => {
+  const val = emailInput.value.trim();
+  if (val && !isValidEmail(val)) {
+    setFieldError(emailInput, 'Enter a valid email address.');
+  } else {
+    clearFieldError(emailInput);
+  }
+});
+emailInput?.addEventListener('input', () => {
+  if (emailInput.getAttribute('aria-invalid')) clearFieldError(emailInput);
+});
 
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
@@ -77,6 +132,23 @@ form.addEventListener('submit', async (event) => {
   messageBox.textContent = '';
   messageBox.className = 'form-message';
 
+  // Client-side validation
+  let hasError = false;
+  if (!isValidEmail(payload.email)) {
+    setFieldError(emailInput, 'Enter a valid email address.');
+    hasError = true;
+  }
+  if (!isValidEthiopianPhone(payload.phone)) {
+    setFieldError(phoneInput, 'Enter an Ethiopian number: +251912345678 or 0912345678');
+    hasError = true;
+  }
+  if (hasError) return;
+
+  const submitBtn = form.querySelector('[type="submit"]');
+  const originalText = submitBtn.textContent;
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Sending…';
+
   try {
     const res = await fetch('/api/register', {
       method:  'POST',
@@ -86,9 +158,11 @@ form.addEventListener('submit', async (event) => {
 
     const data = await res.json();
     if (res.ok) {
-      messageBox.textContent = data.message;
+      messageBox.textContent = data.message + ' Check your email and phone for a confirmation.';
       messageBox.className   = 'form-message success';
       form.reset();
+      clearFieldError(emailInput);
+      clearFieldError(phoneInput);
       await updateCount();
     } else {
       messageBox.textContent = data.message || 'Registration failed.';
@@ -97,6 +171,9 @@ form.addEventListener('submit', async (event) => {
   } catch (_) {
     messageBox.textContent = 'Unable to submit right now.';
     messageBox.className   = 'form-message error';
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = originalText;
   }
 });
 

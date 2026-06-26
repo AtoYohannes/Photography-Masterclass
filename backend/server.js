@@ -1,3 +1,4 @@
+require('dotenv').config();
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
@@ -101,6 +102,152 @@ async function connectDatabase() {
 function sendJson(res, statusCode, payload) {
   res.writeHead(statusCode, { 'Content-Type': 'application/json; charset=utf-8' });
   res.end(JSON.stringify(payload));
+}
+
+// ── Validation ────────────────────────────────────────
+
+function validateEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email.trim());
+}
+
+// Accepts: +251912345678 | 251912345678 | 0912345678 (with optional spaces)
+// Ethiopian mobile: 9xx or 7xx series after country code
+function validateEthiopianPhone(phone) {
+  const cleaned = phone.replace(/[\s\-().]/g, '');
+  return /^(?:\+251|251|0)[79]\d{8}$/.test(cleaned);
+}
+
+function normalizePhone(phone) {
+  const cleaned = phone.replace(/[\s\-().]/g, '');
+  if (cleaned.startsWith('+251')) return cleaned;
+  if (cleaned.startsWith('251'))  return '+' + cleaned;
+  if (cleaned.startsWith('0'))    return '+251' + cleaned.slice(1);
+  return phone;
+}
+
+// ── Notifications (fire-and-forget, never block the response) ─
+
+const EVENT_DATE     = process.env.EVENT_DATE     || 'Date TBA';
+const EVENT_LOCATION = process.env.EVENT_LOCATION || 'Addis Ababa';
+
+function emailHtml(reg) {
+  return `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#f5f5f5;font-family:'Helvetica Neue',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="padding:40px 16px;">
+    <tr><td align="center">
+      <table width="560" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:20px;overflow:hidden;max-width:560px;width:100%;">
+
+        <!-- Header -->
+        <tr><td style="background:#0b2122;padding:36px 40px 28px;">
+          <p style="margin:0 0 4px;font-size:11px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:#2bbcc0;">Visit Addis Ababa</p>
+          <h1 style="margin:0;font-size:26px;font-weight:800;color:#ffffff;line-height:1.25;">Photography Master Class</h1>
+        </td></tr>
+
+        <!-- Body -->
+        <tr><td style="padding:36px 40px;">
+          <p style="margin:0 0 12px;font-size:16px;color:#0b2122;font-weight:600;">Hey ${escHtml(reg.fullName)} 👋</p>
+          <p style="margin:0 0 24px;font-size:15px;color:#374151;line-height:1.7;">
+            You're officially registered for the <strong>Photography Master Class</strong> hosted by Visit Addis Ababa.
+            We're excited to have you with us!
+          </p>
+
+          <!-- Detail box -->
+          <table width="100%" cellpadding="0" cellspacing="0" style="background:#f7f8f7;border-radius:14px;margin:0 0 28px;">
+            <tr><td style="padding:24px 28px;">
+              <p style="margin:0 0 10px;font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#5a6e6f;">Event details</p>
+              <table cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="padding:5px 16px 5px 0;font-size:13px;color:#5a6e6f;white-space:nowrap;">📅 Date</td>
+                  <td style="padding:5px 0;font-size:13px;color:#0b2122;font-weight:600;">${EVENT_DATE}</td>
+                </tr>
+                <tr>
+                  <td style="padding:5px 16px 5px 0;font-size:13px;color:#5a6e6f;white-space:nowrap;">📍 Location</td>
+                  <td style="padding:5px 0;font-size:13px;color:#0b2122;font-weight:600;">${EVENT_LOCATION}</td>
+                </tr>
+                <tr>
+                  <td style="padding:5px 16px 5px 0;font-size:13px;color:#5a6e6f;white-space:nowrap;">🎟 Admission</td>
+                  <td style="padding:5px 0;font-size:13px;color:#0b2122;font-weight:600;">Free</td>
+                </tr>
+              </table>
+            </td></tr>
+          </table>
+
+          <p style="margin:0 0 8px;font-size:14px;color:#374151;line-height:1.7;">
+            What you'll learn: street photography, portraiture, composition, and how to tell visual stories about Addis Ababa.
+          </p>
+          <p style="margin:0 0 28px;font-size:14px;color:#374151;line-height:1.7;">
+            More details (exact time, venue address, what to bring) will be sent closer to the event. Keep an eye on your inbox!
+          </p>
+
+          <p style="margin:0;font-size:13px;color:#5a6e6f;">
+            See you behind the lens,<br>
+            <strong style="color:#0b2122;">Visit Addis Ababa Team</strong>
+          </p>
+        </td></tr>
+
+        <!-- Footer -->
+        <tr><td style="padding:20px 40px;border-top:1px solid rgba(11,33,34,0.08);">
+          <p style="margin:0;font-size:11px;color:#9ca3af;text-align:center;">
+            You received this because you registered at visitaddisababa.et · Photography Master Class
+          </p>
+        </td></tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+}
+
+function smsTxt(reg) {
+  const name = reg.fullName.split(' ')[0];
+  return `Hi ${name}! You're registered for the Photography Master Class by Visit Addis Ababa (${EVENT_DATE}, ${EVENT_LOCATION}). See you there! — Visit Addis`;
+}
+
+function escHtml(str) {
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+async function sendRegistrationEmail(reg) {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) return;
+
+  try {
+    const from = process.env.EMAIL_FROM || 'Photography Master Class <onboarding@resend.dev>';
+    await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        from,
+        to:      reg.email,
+        subject: `You're registered! Photography Master Class — ${EVENT_DATE}`,
+        html:    emailHtml(reg)
+      })
+    });
+  } catch (_) {}
+}
+
+async function sendRegistrationSms(reg) {
+  const apiKey   = process.env.AT_API_KEY;
+  if (!apiKey) return;
+
+  try {
+    const username = process.env.AT_USERNAME || 'sandbox';
+    const base     = username === 'sandbox'
+      ? 'https://api.sandbox.africastalking.com'
+      : 'https://api.africastalking.com';
+
+    const params = new URLSearchParams({ username, to: reg.phone, message: smsTxt(reg) });
+    if (process.env.AT_SENDER_ID) params.set('from', process.env.AT_SENDER_ID);
+
+    await fetch(`${base}/version1/messaging`, {
+      method:  'POST',
+      headers: { 'apiKey': apiKey, 'Content-Type': 'application/x-www-form-urlencoded', 'Accept': 'application/json' },
+      body:    params.toString()
+    });
+  } catch (_) {}
 }
 
 function serveStaticFile(res, filePath) {
@@ -256,18 +403,30 @@ function createServer() {
             try {
               const payload = JSON.parse(body || '{}');
               const fullName = String(payload.fullName || '').trim();
-              const email = String(payload.email || '').trim();
-              const phone = String(payload.phone || '').trim();
+              const email   = String(payload.email   || '').trim();
+              const phone   = String(payload.phone   || '').trim();
 
               if (!fullName || !email || !phone) {
                 sendJson(res, 400, { success: false, message: 'Please complete all fields.' });
                 return;
               }
 
+              if (!validateEmail(email)) {
+                sendJson(res, 400, { success: false, message: 'Please enter a valid email address.' });
+                return;
+              }
+
+              if (!validateEthiopianPhone(phone)) {
+                sendJson(res, 400, { success: false, message: 'Please enter a valid Ethiopian phone number (e.g. +251912345678 or 0912345678).' });
+                return;
+              }
+
+              const normalizedPhone = normalizePhone(phone);
+
               if (db.prepare) {
                 const existing = db
                   .prepare('SELECT 1 FROM registrations WHERE lower(email) = lower(?) OR lower(phone) = lower(?) LIMIT 1')
-                  .get(email, phone);
+                  .get(email, normalizedPhone);
 
                 if (existing) {
                   sendJson(res, 409, {
@@ -281,7 +440,7 @@ function createServer() {
                   id: `${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
                   fullName,
                   email,
-                  phone,
+                  phone: normalizedPhone,
                   registeredAt: new Date().toISOString()
                 };
 
@@ -301,10 +460,15 @@ function createServer() {
                   count: Number(countRow.count),
                   registration
                 });
+
+                // Fire notifications after responding (non-blocking)
+                sendRegistrationEmail(registration).catch(() => {});
+                sendRegistrationSms(registration).catch(() => {});
+
               } else {
                 const existing = await db.query({
                   text: 'SELECT 1 FROM registrations WHERE lower(email) = lower($1) OR lower(phone) = lower($2) LIMIT 1',
-                  values: [email, phone]
+                  values: [email, normalizedPhone]
                 });
 
                 if (existing.rows.length > 0) {
@@ -319,7 +483,7 @@ function createServer() {
                   id: `${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
                   fullName,
                   email,
-                  phone,
+                  phone: normalizedPhone,
                   registeredAt: new Date().toISOString()
                 };
 
@@ -336,6 +500,10 @@ function createServer() {
                   count: Number(countRow.rows[0].count),
                   registration
                 });
+
+                // Fire notifications after responding (non-blocking)
+                sendRegistrationEmail(registration).catch(() => {});
+                sendRegistrationSms(registration).catch(() => {});
               }
             } catch (error) {
               sendJson(res, 400, { success: false, message: 'Invalid request payload.' });

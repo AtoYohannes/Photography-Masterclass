@@ -737,6 +737,18 @@ img { display: block; max-width: 100%; }
 .form-message.success { color: #1a7a3e; }
 .form-message.error   { color: #c0392b; }
 
+.field-error {
+  margin: 0.35rem 0 0;
+  font-size: 0.8rem;
+  color: #c0392b;
+  font-weight: 500;
+}
+
+input[aria-invalid="true"] {
+  border-color: #c0392b !important;
+  box-shadow: 0 0 0 3px rgba(192, 57, 43, 0.12);
+}
+
 /* ── ENTRIES ────────────────────────────────────── */
 .entries-section {
   max-width: 1180px;
