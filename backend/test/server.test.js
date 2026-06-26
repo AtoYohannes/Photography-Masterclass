@@ -47,3 +47,38 @@ test('stores a new registration and rejects duplicates', async () => {
     fs.rmSync(tempDir, { recursive: true, force: true });
   }
 });
+
+test('migrates legacy JSON registrations into the database on startup', async () => {
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'vaa-reg-legacy-'));
+  const dataFile = path.join(tempDir, 'registrations.sqlite');
+  const legacyDataFile = path.join(tempDir, 'registrations.json');
+  process.env.DATABASE_PATH = dataFile;
+
+  fs.writeFileSync(legacyDataFile, JSON.stringify([
+    {
+      id: 'legacy-1',
+      fullName: 'Legacy Person',
+      email: 'legacy@example.com',
+      phone: '+251900000001',
+      registeredAt: '2026-01-01T00:00:00.000Z'
+    }
+  ]), 'utf8');
+
+  const server = createServer();
+  await new Promise((resolve) => server.listen(0, resolve));
+  const { port } = server.address();
+
+  try {
+    const countResponse = await fetch(`http://127.0.0.1:${port}/api/registrations/count`);
+    const countBody = await countResponse.json();
+    assert.equal(countBody.count, 1);
+
+    const listResponse = await fetch(`http://127.0.0.1:${port}/api/registrations`);
+    const listBody = await listResponse.json();
+    assert.equal(listBody.registrations[0].email, 'legacy@example.com');
+  } finally {
+    await new Promise((resolve, reject) => server.close((error) => (error ? reject(error) : resolve())));
+    delete process.env.DATABASE_PATH;
+    fs.rmSync(tempDir, { recursive: true, force: true });
+  }
+});

@@ -59,6 +59,29 @@ async function connectDatabase() {
     );
   `);
 
+  const legacyJsonPath = path.join(path.dirname(dbPath), 'registrations.json');
+  if (fs.existsSync(legacyJsonPath)) {
+    try {
+      const legacyEntries = JSON.parse(fs.readFileSync(legacyJsonPath, 'utf8'));
+      if (Array.isArray(legacyEntries) && legacyEntries.length > 0) {
+        for (const entry of legacyEntries) {
+          const existing = db.prepare('SELECT 1 FROM registrations WHERE id = ?').get(entry.id);
+          if (!existing) {
+            db.prepare('INSERT INTO registrations (id, full_name, email, phone, registered_at) VALUES (?, ?, ?, ?, ?)').run(
+              entry.id,
+              entry.fullName || entry.full_name || '',
+              entry.email || '',
+              entry.phone || '',
+              entry.registeredAt || entry.registered_at || new Date().toISOString()
+            );
+          }
+        }
+      }
+    } catch (error) {
+      // Ignore legacy data import errors and continue with the empty database.
+    }
+  }
+
   return db;
 }
 
