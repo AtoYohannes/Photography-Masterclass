@@ -8,12 +8,13 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Outfit:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
+
     <header class="topbar">
       <div class="brand">
         <img src="https://visitaddisababa.et/assets/logo-CiFNnHkJ.svg" alt="Visit Addis Ababa logo" />
@@ -26,143 +27,192 @@
     </header>
 
     <main>
+
+      <!-- ── HERO ──────────────────────────────────── -->
       <section class="hero">
-        <div class="hero-copy">
-          <p class="hero-badge">Free photography master class</p>
-          <h2>Frame Addis. Tell its story in light, color, and motion.</h2>
-          <p class="lead">
-            Join a bold, high-energy learning experience led by Amanuel Sileshi and Adane Firdie. This free session is designed for photographers who want to capture the pulse of the city with confidence.
-          </p>
-          <div class="hero-actions">
-            <a class="button primary" href="#register">Reserve your place</a>
-            <a class="button secondary" href="#entriesSection">See registered people</a>
-            <div class="stat-card">
+        <div class="hero-bg" aria-hidden="true"></div>
+        <div class="hero-vignette" aria-hidden="true"></div>
+        <div class="hero-grain" aria-hidden="true"></div>
+
+        <div class="camera-deco" aria-hidden="true">
+          <span>f/1.8</span>
+          <span>1/250s</span>
+          <span>ISO 400</span>
+        </div>
+
+        <div class="hero-content">
+          <div class="hero-badge">
+            <span class="badge-dot"></span>
+            Free Photography Master Class
+          </div>
+
+          <div class="hero-headline-row">
+            <h2 class="hero-headline">
+              <span class="hl-1">Frame</span>
+              <span class="hl-2">Addis.</span>
+            </h2>
+            <div class="hero-stat-box">
               <strong id="registrationsCount">0</strong>
-              <span>registered so far</span>
+              <span>registered</span>
             </div>
           </div>
-          <div class="hero-highlights">
-            <div class="highlight-card">
-              <strong>Street portraits</strong>
-              <span>People, energy, story</span>
-            </div>
-            <div class="highlight-card">
-              <strong>Golden hour</strong>
-              <span>Light and atmosphere</span>
-            </div>
-            <div class="highlight-card">
-              <strong>Local rhythm</strong>
-              <span>Culture in motion</span>
-            </div>
+
+          <p class="hero-sub">
+            Tell its story in light,<br>color &amp; motion.
+          </p>
+
+          <div class="hero-actions">
+            <a class="btn-fire" href="#register">Reserve your place →</a>
+            <a class="btn-outline" href="#entriesSection">See who's in</a>
           </div>
         </div>
-        <div class="hero-panel">
-          <div class="panel-card">
-            <div class="image-frame">
-              <div class="panel-caption">
-                <p class="eyebrow">Featured mood</p>
-                <h3>Golden hour, urban rhythm, and authentic faces.</h3>
-              </div>
-            </div>
-            <div class="panel-list">
-              <h4>What to expect</h4>
-              <ul>
-                <li>Free admission</li>
-                <li>Fast pre-registration</li>
-                <li>Limited seats for the master class</li>
-              </ul>
-            </div>
+
+        <div class="hero-footer-bar">
+          <div class="hero-tags">
+            <span>Street portraits</span>
+            <span class="sep">·</span>
+            <span>Golden hour</span>
+            <span class="sep">·</span>
+            <span>Local rhythm</span>
+            <span class="sep">·</span>
+            <span>People, energy, story</span>
+          </div>
+          <div class="hero-perks">
+            <span>Free admission</span>
+            <span class="sep-bar">|</span>
+            <span>Fast pre-registration</span>
+            <span class="sep-bar">|</span>
+            <span>Limited seats</span>
           </div>
         </div>
       </section>
 
+      <!-- ── WHAT YOU'LL LEARN ──────────────────────── -->
       <section class="themes-section">
-        <div class="section-heading">
+        <div class="themes-header">
           <p class="eyebrow">Photography focus</p>
-          <h3>From city streets to cultural detail, every frame tells a story.</h3>
+          <h3>From city streets to cultural detail,<br>every frame tells a story.</h3>
         </div>
         <div class="themes-grid">
           <article class="theme-card">
-            <h4>Street stories</h4>
-            <p>Capture movement, crowds, and the everyday energy of Addis.</p>
+            <span class="theme-num">01</span>
+            <div class="theme-body">
+              <h4>Street stories</h4>
+              <p>Capture movement, crowds, and the everyday energy of Addis.</p>
+            </div>
           </article>
           <article class="theme-card">
-            <h4>Portraits with soul</h4>
-            <p>Learn how to connect with subjects and create honest, striking portraits.</p>
+            <span class="theme-num">02</span>
+            <div class="theme-body">
+              <h4>Portraits with soul</h4>
+              <p>Learn how to connect with subjects and create honest, striking portraits.</p>
+            </div>
           </article>
           <article class="theme-card">
-            <h4>Visual rhythm</h4>
-            <p>Bring together texture, color, and composition for a stronger narrative.</p>
+            <span class="theme-num">03</span>
+            <div class="theme-body">
+              <h4>Visual rhythm</h4>
+              <p>Bring together texture, color, and composition for a stronger narrative.</p>
+            </div>
           </article>
         </div>
       </section>
 
+      <!-- ── MENTORS ────────────────────────────────── -->
       <section class="teachers-section">
-        <div class="section-heading">
+        <div class="section-header">
           <p class="eyebrow">Meet your mentors</p>
-          <h3>Learn from experienced visual storytellers.</h3>
+          <h3>Learn from experienced<br>visual storytellers.</h3>
         </div>
         <div class="teachers-grid">
           <article class="teacher-card">
-            <div class="teacher-photo placeholder">Upload image</div>
-            <h4>Amanuel Sileshi</h4>
-            <p>Photography educator and visual storyteller with a deep eye for urban narrative.</p>
+            <div class="teacher-photo">
+              <span class="photo-label">Photo coming</span>
+              <div class="teacher-overlay">
+                <h4>Amanuel Sileshi</h4>
+              </div>
+            </div>
+            <div class="teacher-body">
+              <p>Photography educator and visual storyteller with a deep eye for urban narrative.</p>
+            </div>
           </article>
           <article class="teacher-card">
-            <div class="teacher-photo placeholder">Upload image</div>
-            <h4>Adane Firdie</h4>
-            <p>Creative photographer focused on culture, movement, and capturing authentic scenes.</p>
+            <div class="teacher-photo">
+              <span class="photo-label">Photo coming</span>
+              <div class="teacher-overlay">
+                <h4>Adane Firdie</h4>
+              </div>
+            </div>
+            <div class="teacher-body">
+              <p>Creative photographer focused on culture, movement, and capturing authentic scenes.</p>
+            </div>
           </article>
         </div>
       </section>
 
+      <!-- ── REGISTER ───────────────────────────────── -->
       <section class="register-section" id="register">
-        <div class="register-card">
+        <div class="register-inner">
+          <div class="register-glow" aria-hidden="true"></div>
+
           <div class="register-copy">
             <p class="eyebrow">Pre-register</p>
-            <h3>Secure your complimentary spot.</h3>
-            <p>
-              Share your details below and we’ll keep your registration on record. If you sign up again, we’ll let you know that you have already registered.
+            <h3>Secure your<br>complimentary<br>spot.</h3>
+            <p class="register-sub">
+              Share your details and we'll hold your place. If you sign up again,
+              we'll let you know you're already in.
             </p>
+            <ul class="register-perks">
+              <li>Free admission</li>
+              <li>Instant confirmation</li>
+              <li>Limited seats only</li>
+            </ul>
           </div>
+
           <form id="registrationForm" class="register-form">
-            <label>
-              Full name
-              <input type="text" name="fullName" placeholder="Your full name" required />
-            </label>
-            <label>
-              Email address
-              <input type="email" name="email" placeholder="you@example.com" required />
-            </label>
-            <label>
-              Phone number
-              <input type="tel" name="phone" placeholder="+251 9XX XXX XXX" required />
-            </label>
-            <button class="button primary" type="submit">Pre-register</button>
+            <div class="field">
+              <label for="f-name">Full name</label>
+              <input id="f-name" type="text" name="fullName" placeholder="Your full name" required />
+            </div>
+            <div class="field">
+              <label for="f-email">Email address</label>
+              <input id="f-email" type="email" name="email" placeholder="you@example.com" required />
+            </div>
+            <div class="field">
+              <label for="f-phone">Phone number</label>
+              <input id="f-phone" type="tel" name="phone" placeholder="+251 9XX XXX XXX" required />
+            </div>
+            <button class="btn-fire btn-submit" type="submit">Pre-register now →</button>
             <p id="formMessage" class="form-message" role="status" aria-live="polite"></p>
           </form>
         </div>
       </section>
 
+      <!-- ── ATTENDEES ──────────────────────────────── -->
       <section class="entries-section" id="entriesSection" aria-labelledby="entriesTitle">
-        <div class="section-heading">
-          <p class="eyebrow">Organizer view</p>
-          <h3 id="entriesTitle">Registered attendees</h3>
+        <div class="entries-header">
+          <div>
+            <p class="eyebrow">Organizer view</p>
+            <h3 id="entriesTitle">Registered attendees</h3>
+          </div>
+          <button class="btn-outline" id="refreshEntries" type="button">Refresh list</button>
         </div>
         <div class="entries-card">
-          <div class="entries-toolbar">
-            <p>Live list of everyone who pre-registered.</p>
-            <button class="button secondary" id="refreshEntries" type="button">Refresh</button>
-          </div>
+          <p class="entries-meta">Live list of everyone who pre-registered.</p>
           <div id="entriesTable" class="entries-table">
             <p class="empty-state">Loading registrations…</p>
           </div>
         </div>
       </section>
+
     </main>
 
     <footer class="footer">
-      <p>Photography Master Class • Visit Addis Ababa • Free entry</p>
+      <span>Photography Master Class</span>
+      <span class="footer-dot">·</span>
+      <span>Visit Addis Ababa</span>
+      <span class="footer-dot">·</span>
+      <span>Free entry</span>
     </footer>
 
     <script src="/app.js"></script>
