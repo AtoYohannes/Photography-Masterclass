@@ -158,7 +158,7 @@ form.addEventListener('submit', async (event) => {
 
     const data = await res.json();
     if (res.ok) {
-      messageBox.textContent = data.message + ' Check your email and phone for a confirmation.';
+      messageBox.textContent = data.message;
       messageBox.className   = 'form-message success';
       form.reset();
       clearFieldError(emailInput);
