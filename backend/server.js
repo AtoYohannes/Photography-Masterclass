@@ -125,6 +125,81 @@ function createServer() {
 
     const handleRequest = async () => {
       try {
+
+        // ── Routes that don't need the database ──────────
+        // These run immediately regardless of DB state.
+
+        if (pathname === '/api/auth') {
+          if (req.method !== 'POST') {
+            sendJson(res, 405, { success: false, message: 'Method not allowed.' });
+            return;
+          }
+          let body = '';
+          req.on('data', chunk => { body += chunk; });
+          req.on('end', () => {
+            try {
+              const { password } = JSON.parse(body || '{}');
+              if (password === ADMIN_PASSWORD) {
+                sendJson(res, 200, { success: true });
+              } else {
+                sendJson(res, 401, { success: false, message: 'Incorrect password.' });
+              }
+            } catch (_) {
+              sendJson(res, 400, { success: false, message: 'Invalid request.' });
+            }
+          });
+          return;
+        }
+
+        if (pathname === '/api/images') {
+          if (req.method !== 'GET') {
+            sendJson(res, 405, { success: false, message: 'Method not allowed.' });
+            return;
+          }
+          const files = fs.readdirSync(IMAGES_DIR)
+            .filter(f => IMAGE_EXTS.has(path.extname(f).toLowerCase()))
+            .map(f => `/images/${f}`);
+          sendJson(res, 200, { images: files });
+          return;
+        }
+
+        if (pathname === '/api/teachers') {
+          if (req.method !== 'GET') {
+            sendJson(res, 405, { success: false, message: 'Method not allowed.' });
+            return;
+          }
+          const files = fs.readdirSync(TEACHERS_DIR)
+            .filter(f => IMAGE_EXTS.has(path.extname(f).toLowerCase()))
+            .sort()
+            .map(f => `/Teachers/${encodeURIComponent(f)}`);
+          sendJson(res, 200, { images: files });
+          return;
+        }
+
+        if (pathname === '/organizer') {
+          serveStaticFile(res, path.join(FRONTEND_DIR, 'organizer.html'));
+          return;
+        }
+
+        if (pathname === '/') {
+          serveStaticFile(res, path.join(FRONTEND_DIR, 'index.html'));
+          return;
+        }
+
+        if (!pathname.startsWith('/api/')) {
+          const relativePath = pathname.startsWith('/') ? pathname.slice(1) : pathname;
+          const filePath = path.join(FRONTEND_DIR, relativePath);
+          const isInsideFrontend = path.resolve(filePath).startsWith(path.resolve(FRONTEND_DIR));
+          if (isInsideFrontend) {
+            serveStaticFile(res, filePath);
+          } else {
+            res.writeHead(403, { 'Content-Type': 'text/plain; charset=utf-8' });
+            res.end('Forbidden');
+          }
+          return;
+        }
+
+        // ── Routes that need the database ────────────────
         const db = await dbPromise;
 
         if (pathname === '/api/registrations/count') {
@@ -269,76 +344,10 @@ function createServer() {
           return;
         }
 
-        if (pathname === '/api/images') {
-          if (req.method !== 'GET') {
-            sendJson(res, 405, { success: false, message: 'Method not allowed.' });
-            return;
-          }
-          const files = fs.readdirSync(IMAGES_DIR)
-            .filter(f => IMAGE_EXTS.has(path.extname(f).toLowerCase()))
-            .map(f => `/images/${f}`);
-          sendJson(res, 200, { images: files });
-          return;
-        }
+        sendJson(res, 404, { success: false, message: 'Not found.' });
 
-        if (pathname === '/api/teachers') {
-          if (req.method !== 'GET') {
-            sendJson(res, 405, { success: false, message: 'Method not allowed.' });
-            return;
-          }
-          const files = fs.readdirSync(TEACHERS_DIR)
-            .filter(f => IMAGE_EXTS.has(path.extname(f).toLowerCase()))
-            .sort()
-            .map(f => `/Teachers/${encodeURIComponent(f)}`);
-          sendJson(res, 200, { images: files });
-          return;
-        }
-
-        if (pathname === '/api/auth') {
-          if (req.method !== 'POST') {
-            sendJson(res, 405, { success: false, message: 'Method not allowed.' });
-            return;
-          }
-          let body = '';
-          req.on('data', chunk => { body += chunk; });
-          req.on('end', () => {
-            try {
-              const { password } = JSON.parse(body || '{}');
-              if (password === ADMIN_PASSWORD) {
-                sendJson(res, 200, { success: true });
-              } else {
-                sendJson(res, 401, { success: false, message: 'Incorrect password.' });
-              }
-            } catch (_) {
-              sendJson(res, 400, { success: false, message: 'Invalid request.' });
-            }
-          });
-          return;
-        }
-
-        if (pathname === '/organizer') {
-          serveStaticFile(res, path.join(FRONTEND_DIR, 'organizer.html'));
-          return;
-        }
-
-        if (pathname === '/') {
-          serveStaticFile(res, path.join(FRONTEND_DIR, 'index.html'));
-          return;
-        }
-
-        const safePath = pathname === '/' ? '/index.html' : pathname;
-        const relativePath = safePath.startsWith('/') ? safePath.slice(1) : safePath;
-        const filePath = path.join(FRONTEND_DIR, relativePath);
-        const isInsideFrontend = path.resolve(filePath).startsWith(path.resolve(FRONTEND_DIR));
-
-        if (isInsideFrontend) {
-          serveStaticFile(res, filePath);
-        } else {
-          res.writeHead(403, { 'Content-Type': 'text/plain; charset=utf-8' });
-          res.end('Forbidden');
-        }
       } catch (error) {
-        sendJson(res, 500, { success: false, message: 'Database error.' });
+        sendJson(res, 500, { success: false, message: 'Server error.' });
       }
     };
 
