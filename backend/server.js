@@ -4,6 +4,10 @@ const path = require('path');
 const { Client } = require('pg');
 
 const FRONTEND_DIR = path.join(__dirname, '..', 'frontend');
+const IMAGES_DIR = path.join(FRONTEND_DIR, 'images');
+fs.mkdirSync(IMAGES_DIR, { recursive: true });
+
+const IMAGE_EXTS = new Set(['.jpg', '.jpeg', '.png', '.webp', '.avif', '.gif']);
 
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -248,6 +252,18 @@ function createServer() {
               sendJson(res, 400, { success: false, message: 'Invalid request payload.' });
             }
           });
+          return;
+        }
+
+        if (pathname === '/api/images') {
+          if (req.method !== 'GET') {
+            sendJson(res, 405, { success: false, message: 'Method not allowed.' });
+            return;
+          }
+          const files = fs.readdirSync(IMAGES_DIR)
+            .filter(f => IMAGE_EXTS.has(path.extname(f).toLowerCase()))
+            .map(f => `/images/${f}`);
+          sendJson(res, 200, { images: files });
           return;
         }
 

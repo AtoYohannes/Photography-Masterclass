@@ -1,3 +1,39 @@
+// ── Floating hero photos ────────────────────────────
+async function loadHeroPhotos() {
+  const container = document.getElementById('heroPhotos');
+  if (!container) return;
+
+  try {
+    const res = await fetch('/api/images');
+    const data = await res.json();
+    const images = data.images || [];
+
+    if (images.length === 0) {
+      const hint = document.createElement('p');
+      hint.className = 'hero-photos-empty';
+      hint.textContent = 'Drop photos into the /images folder to display them here';
+      container.appendChild(hint);
+      return;
+    }
+
+    // Show up to 8 images, randomise order each load
+    const picks = images.sort(() => Math.random() - 0.5).slice(0, 8);
+    picks.forEach(src => {
+      const card = document.createElement('div');
+      card.className = 'photo-card';
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = '';
+      img.loading = 'lazy';
+      card.appendChild(img);
+      container.appendChild(card);
+    });
+  } catch (_) {
+    // silently skip if images endpoint isn't available
+  }
+}
+
+// ── Registration form ───────────────────────────────
 const form = document.getElementById('registrationForm');
 const messageBox = document.getElementById('formMessage');
 const countBox = document.getElementById('registrationsCount');
@@ -102,3 +138,4 @@ form.addEventListener('submit', async (event) => {
 
 updateCount();
 loadEntries();
+loadHeroPhotos();

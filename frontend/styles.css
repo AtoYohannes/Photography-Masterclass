@@ -4,10 +4,10 @@
 ────────────────────────────────────────────────── */
 
 :root {
-  --bg:       #060d0e;
-  --s1:       #0b2122;
-  --s2:       #0e3f3e;
-  --s3:       #10383a;
+  --bg:       #0b2122;
+  --s1:       #0e3f3e;
+  --s2:       #10383a;
+  --s3:       #184b4e;
   --fire:     #daa112;
   --fire-glow: rgba(218, 161, 18, 0.38);
   --gold:     #2bbcc0;
@@ -140,25 +140,55 @@ img { display: block; max-width: 100%; }
   overflow: hidden;
 }
 
-.hero-bg {
+/* ── FLOATING PHOTO CARDS ───────────────────────── */
+.hero-photos {
   position: absolute;
   inset: 0;
   z-index: 0;
-  background:
-    url('https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?auto=format&fit=crop&w=1800&q=85')
-    center / cover no-repeat;
+  pointer-events: none;
 }
 
-.hero-vignette {
+.photo-card {
   position: absolute;
-  inset: 0;
-  z-index: 1;
-  background: linear-gradient(
-    170deg,
-    rgba(8, 8, 8, 0.78) 0%,
-    rgba(8, 8, 8, 0.45) 45%,
-    rgba(8, 8, 8, 0.90) 100%
-  );
+  border: 5px solid rgba(255, 253, 246, 0.92);
+  border-radius: 4px;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.55),
+    0 2px 8px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  will-change: transform;
+}
+
+.photo-card img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 8 fixed scatter positions */
+.photo-card:nth-child(1) { width: 200px; height: 160px; top:  4%; left:  2%; transform: rotate(-7deg); animation: fl-a 4.4s ease-in-out infinite; }
+.photo-card:nth-child(2) { width: 175px; height: 220px; top:  2%; left: 26%; transform: rotate( 4deg); animation: fl-b 5.6s ease-in-out infinite 0.7s; }
+.photo-card:nth-child(3) { width: 230px; height: 175px; top:  3%; right: 6%; transform: rotate(-3deg); animation: fl-c 4.9s ease-in-out infinite 1.2s; }
+.photo-card:nth-child(4) { width: 195px; height: 250px; top: 38%; right: 2%; transform: rotate( 6deg); animation: fl-d 6.2s ease-in-out infinite 0.3s; }
+.photo-card:nth-child(5) { width: 210px; height: 165px; top: 62%; right:18%; transform: rotate(-4deg); animation: fl-a 5.1s ease-in-out infinite 1.5s; }
+.photo-card:nth-child(6) { width: 165px; height: 210px; top: 48%; left:  4%; transform: rotate( 5deg); animation: fl-b 4.7s ease-in-out infinite 0.9s; }
+.photo-card:nth-child(7) { width: 185px; height: 145px; top: 18%; right:28%; transform: rotate(-6deg); animation: fl-c 5.8s ease-in-out infinite 0.4s; }
+.photo-card:nth-child(8) { width: 155px; height: 195px; top: 70%; left: 22%; transform: rotate( 3deg); animation: fl-d 4.3s ease-in-out infinite 1.1s; }
+
+@keyframes fl-a { 0%,100% { translate: 0 0px; } 50% { translate: 0 -16px; } }
+@keyframes fl-b { 0%,100% { translate: 0 0px; } 50% { translate: 0 -22px; } }
+@keyframes fl-c { 0%,100% { translate: 0 0px; } 50% { translate: 0 -13px; } }
+@keyframes fl-d { 0%,100% { translate: 0 0px; } 50% { translate: 0 -19px; } }
+
+.hero-photos-empty {
+  position: absolute;
+  bottom: 7rem;
+  right: 2.5rem;
+  font-size: 0.72rem;
+  color: rgba(255, 253, 246, 0.22);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 
 /* Film grain */
