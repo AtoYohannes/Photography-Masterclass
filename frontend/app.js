@@ -16,7 +16,6 @@ async function loadHeroPhotos() {
       return;
     }
 
-    // Show up to 8 images, randomise order each load
     const picks = images.sort(() => Math.random() - 0.5).slice(0, 8);
     picks.forEach(src => {
       const card = document.createElement('div');
@@ -28,114 +27,80 @@ async function loadHeroPhotos() {
       card.appendChild(img);
       container.appendChild(card);
     });
-  } catch (_) {
-    // silently skip if images endpoint isn't available
-  }
+  } catch (_) {}
 }
 
-// ── Registration form ───────────────────────────────
-const form = document.getElementById('registrationForm');
-const messageBox = document.getElementById('formMessage');
+// ── Teacher photos ───────────────────────────────────
+async function loadTeacherPhotos() {
+  try {
+    const res = await fetch('/api/teachers');
+    const data = await res.json();
+    const images = data.images || [];
+
+    images.slice(0, 2).forEach((src, i) => {
+      const slot = document.querySelector(`.teacher-photo[data-teacher="${i + 1}"]`);
+      if (!slot) return;
+      slot.querySelector('.photo-label')?.remove();
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = '';
+      img.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;';
+      slot.insertBefore(img, slot.firstChild);
+    });
+  } catch (_) {}
+}
+
+// ── Registration count ──────────────────────────────
 const countBox = document.getElementById('registrationsCount');
-const entriesTable = document.getElementById('entriesTable');
-const refreshEntriesButton = document.getElementById('refreshEntries');
 
 async function updateCount() {
   try {
-    const response = await fetch('/api/registrations/count');
-    const data = await response.json();
-    if (data.success) {
-      countBox.textContent = data.count;
-    }
-  } catch (error) {
-    console.error(error);
-  }
+    const res = await fetch('/api/registrations/count');
+    const data = await res.json();
+    if (data.success && countBox) countBox.textContent = data.count;
+  } catch (_) {}
 }
 
-async function loadEntries() {
-  try {
-    const response = await fetch('/api/registrations');
-    const data = await response.json();
-
-    if (!data.success) {
-      entriesTable.innerHTML = '<p class="empty-state">Unable to load registrations right now.</p>';
-      return;
-    }
-
-    if (!data.registrations || data.registrations.length === 0) {
-      entriesTable.innerHTML = '<p class="empty-state">No registrations yet.</p>';
-      return;
-    }
-
-    const rows = data.registrations
-      .map((entry) => `
-        <tr>
-          <td>${entry.fullName}</td>
-          <td>${entry.email}</td>
-          <td>${entry.phone}</td>
-          <td>${new Date(entry.registeredAt).toLocaleString()}</td>
-        </tr>
-      `)
-      .join('');
-
-    entriesTable.innerHTML = `
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>Registered at</th>
-          </tr>
-        </thead>
-        <tbody>${rows}</tbody>
-      </table>
-    `;
-  } catch (error) {
-    entriesTable.innerHTML = '<p class="empty-state">Unable to load registrations right now.</p>';
-  }
-}
-
-refreshEntriesButton.addEventListener('click', () => {
-  loadEntries();
-});
+// ── Registration form ───────────────────────────────
+const form       = document.getElementById('registrationForm');
+const messageBox = document.getElementById('formMessage');
 
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
   const formData = new FormData(form);
   const payload = {
     fullName: formData.get('fullName')?.toString().trim() || '',
-    email: formData.get('email')?.toString().trim() || '',
-    phone: formData.get('phone')?.toString().trim() || ''
+    email:    formData.get('email')?.toString().trim()    || '',
+    phone:    formData.get('phone')?.toString().trim()    || ''
   };
 
   messageBox.textContent = '';
   messageBox.className = 'form-message';
 
   try {
-    const response = await fetch('/api/register', {
-      method: 'POST',
+    const res = await fetch('/api/register', {
+      method:  'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+      body:    JSON.stringify(payload)
     });
 
-    const data = await response.json();
-    if (response.ok) {
+    const data = await res.json();
+    if (res.ok) {
       messageBox.textContent = data.message;
-      messageBox.className = 'form-message success';
+      messageBox.className   = 'form-message success';
       form.reset();
       await updateCount();
-      await loadEntries();
     } else {
       messageBox.textContent = data.message || 'Registration failed.';
-      messageBox.className = 'form-message error';
+      messageBox.className   = 'form-message error';
     }
-  } catch (error) {
+  } catch (_) {
     messageBox.textContent = 'Unable to submit right now.';
-    messageBox.className = 'form-message error';
+    messageBox.className   = 'form-message error';
   }
 });
 
+// ── Init ────────────────────────────────────────────
 updateCount();
-loadEntries();
 loadHeroPhotos();
+loadTeacherPhotos();

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Organizer Portal | Photography Master Class</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Outfit:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/organizer.css" />
+  </head>
+  <body class="org-body">
+
+    <!-- ── LOGIN SCREEN ───────────────────────────── -->
+    <div id="loginScreen" class="org-screen">
+      <div class="org-login-card">
+        <div class="org-brand">
+          <img src="https://visitaddisababa.et/assets/logo-CiFNnHkJ.svg" alt="Visit Addis Ababa" />
+          <div>
+            <p class="eyebrow">Organizer Portal</p>
+            <h1>Photography Master Class</h1>
+          </div>
+        </div>
+
+        <div class="org-divider"></div>
+
+        <p class="org-hint">Enter your organizer password to view registered attendees.</p>
+
+        <form id="loginForm" class="org-login-form">
+          <div class="field">
+            <label for="orgPassword">Password</label>
+            <input
+              id="orgPassword"
+              type="password"
+              placeholder="••••••••••"
+              required
+              autocomplete="current-password"
+            />
+          </div>
+          <button class="btn-fire org-submit" type="submit">Sign in →</button>
+          <p id="loginError" class="form-message error" role="alert" aria-live="polite"></p>
+        </form>
+
+        <a class="org-back" href="/">← Back to main site</a>
+      </div>
+    </div>
+
+    <!-- ── DASHBOARD SCREEN ───────────────────────── -->
+    <div id="dashScreen" class="org-screen" hidden>
+      <header class="org-header">
+        <div class="org-header-brand">
+          <img src="https://visitaddisababa.et/assets/logo-CiFNnHkJ.svg" alt="Visit Addis Ababa" />
+          <span>Organizer Portal</span>
+        </div>
+        <div class="org-header-actions">
+          <a class="org-back" href="/">← Main site</a>
+          <button class="btn-outline" id="signOutBtn" type="button">Sign out</button>
+        </div>
+      </header>
+
+      <main class="org-main">
+        <div class="org-title-row">
+          <div>
+            <p class="eyebrow">Registered attendees</p>
+            <h2 class="org-title">Photography Master Class</h2>
+          </div>
+          <div class="org-stats">
+            <div class="org-stat">
+              <strong id="orgCount">—</strong>
+              <span>total registrations</span>
+            </div>
+            <button class="btn-outline" id="orgRefresh" type="button">Refresh</button>
+          </div>
+        </div>
+
+        <div class="entries-card">
+          <div id="orgTable" class="entries-table">
+            <p class="empty-state">Loading…</p>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="/organizer.js"></script>
+  </body>
+</html>

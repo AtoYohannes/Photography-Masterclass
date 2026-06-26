@@ -4,10 +4,19 @@ const path = require('path');
 const { Client } = require('pg');
 
 const FRONTEND_DIR = path.join(__dirname, '..', 'frontend');
-const IMAGES_DIR = path.join(FRONTEND_DIR, 'images');
-fs.mkdirSync(IMAGES_DIR, { recursive: true });
+const IMAGES_DIR   = path.join(FRONTEND_DIR, 'images');
+const TEACHERS_DIR = path.join(FRONTEND_DIR, 'Teachers');
+fs.mkdirSync(IMAGES_DIR,   { recursive: true });
+fs.mkdirSync(TEACHERS_DIR, { recursive: true });
 
-const IMAGE_EXTS = new Set(['.jpg', '.jpeg', '.png', '.webp', '.avif', '.gif']);
+const IMAGE_EXTS     = new Set(['.jpg', '.jpeg', '.png', '.webp', '.avif', '.gif']);
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'organizer2024';
+
+function checkAdminAuth(req) {
+  const header = req.headers['authorization'] || '';
+  const token  = header.startsWith('Bearer ') ? header.slice(7) : '';
+  return token === ADMIN_PASSWORD;
+}
 
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -140,6 +149,11 @@ function createServer() {
             return;
           }
 
+          if (!checkAdminAuth(req)) {
+            sendJson(res, 401, { success: false, message: 'Unauthorized.' });
+            return;
+          }
+
           if (db.prepare) {
             const rows = db
               .prepare('SELECT id, full_name AS fullName, email, phone, registered_at AS registeredAt FROM registrations ORDER BY registered_at DESC')
@@ -264,6 +278,46 @@ function createServer() {
             .filter(f => IMAGE_EXTS.has(path.extname(f).toLowerCase()))
             .map(f => `/images/${f}`);
           sendJson(res, 200, { images: files });
+          return;
+        }
+
+        if (pathname === '/api/teachers') {
+          if (req.method !== 'GET') {
+            sendJson(res, 405, { success: false, message: 'Method not allowed.' });
+            return;
+          }
+          const files = fs.readdirSync(TEACHERS_DIR)
+            .filter(f => IMAGE_EXTS.has(path.extname(f).toLowerCase()))
+            .sort()
+            .map(f => `/Teachers/${encodeURIComponent(f)}`);
+          sendJson(res, 200, { images: files });
+          return;
+        }
+
+        if (pathname === '/api/auth') {
+          if (req.method !== 'POST') {
+            sendJson(res, 405, { success: false, message: 'Method not allowed.' });
+            return;
+          }
+          let body = '';
+          req.on('data', chunk => { body += chunk; });
+          req.on('end', () => {
+            try {
+              const { password } = JSON.parse(body || '{}');
+              if (password === ADMIN_PASSWORD) {
+                sendJson(res, 200, { success: true });
+              } else {
+                sendJson(res, 401, { success: false, message: 'Incorrect password.' });
+              }
+            } catch (_) {
+              sendJson(res, 400, { success: false, message: 'Invalid request.' });
+            }
+          });
+          return;
+        }
+
+        if (pathname === '/organizer') {
+          serveStaticFile(res, path.join(FRONTEND_DIR, 'organizer.html'));
           return;
         }
 
