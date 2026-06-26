@@ -44,6 +44,7 @@ async function connectDatabase() {
   const config = getDatabaseConfig();
 
   if (config.connectionString) {
+    console.log('[db] connecting to PostgreSQL — data will persist across deploys');
     const client = new Client({ connectionString: config.connectionString });
     await client.connect();
     await client.query(`
@@ -58,6 +59,7 @@ async function connectDatabase() {
     return client;
   }
 
+  console.log('[db] no DATABASE_URL found — using SQLite (data will reset on redeploy!)');
   const { DatabaseSync } = require('node:sqlite');
   const dbPath = config.databasePath;
   fs.mkdirSync(path.dirname(dbPath), { recursive: true });
