@@ -30,25 +30,6 @@ async function loadHeroPhotos() {
   } catch (_) {}
 }
 
-// ── Teacher photos ───────────────────────────────────
-async function loadTeacherPhotos() {
-  try {
-    const res = await fetch('/api/teachers');
-    const data = await res.json();
-    const images = data.images || [];
-
-    images.slice(0, 2).forEach((src, i) => {
-      const slot = document.querySelector(`.teacher-photo[data-teacher="${i + 1}"]`);
-      if (!slot) return;
-      slot.querySelector('.photo-label')?.remove();
-      const img = document.createElement('img');
-      img.src = src;
-      img.alt = '';
-      img.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;';
-      slot.insertBefore(img, slot.firstChild);
-    });
-  } catch (_) {}
-}
 
 // ── Registration count ──────────────────────────────
 const countBox = document.getElementById('registrationsCount');
@@ -180,4 +161,3 @@ form.addEventListener('submit', async (event) => {
 // ── Init ────────────────────────────────────────────
 updateCount();
 loadHeroPhotos();
-loadTeacherPhotos();
