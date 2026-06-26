@@ -15,7 +15,7 @@ services:
           name: visit-addis-ababa-db
           property: connectionString
       - key: ADMIN_PASSWORD
-        generateValue: true
+        value: VisitAddis@Organizer
 
 databases:
   - name: visit-addis-ababa-db

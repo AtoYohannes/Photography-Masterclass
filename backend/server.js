@@ -10,7 +10,7 @@ fs.mkdirSync(IMAGES_DIR,   { recursive: true });
 fs.mkdirSync(TEACHERS_DIR, { recursive: true });
 
 const IMAGE_EXTS     = new Set(['.jpg', '.jpeg', '.png', '.webp', '.avif', '.gif']);
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'organizer2024';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'VisitAddis@Organizer';
 
 function checkAdminAuth(req) {
   const header = req.headers['authorization'] || '';
