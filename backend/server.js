@@ -260,7 +260,7 @@ function createServer() {
               .all();
             sendJson(res, 200, { success: true, registrations: rows });
           } else {
-            const rows = await db.query('SELECT id, full_name AS fullName, email, phone, registered_at AS registeredAt FROM registrations ORDER BY registered_at DESC');
+            const rows = await db.query('SELECT id, full_name AS "fullName", email, phone, registered_at AS "registeredAt" FROM registrations ORDER BY registered_at DESC');
             sendJson(res, 200, { success: true, registrations: rows.rows });
           }
           return;
@@ -362,7 +362,7 @@ function createServer() {
 
                 await db.query({
                   text: 'INSERT INTO registrations (id, full_name, email, phone, registered_at) VALUES ($1, $2, $3, $4, $5)',
-                  values: [registration.id, registration.fullName, registration.email, registration.phone, registration.registeredAt]
+                  values: [registration.id, registration.fullName, registration.email, registration.phone, registration.registeredAt],
                 });
 
                 const countRow = await db.query('SELECT COUNT(*) AS count FROM registrations');
